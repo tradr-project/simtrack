@@ -53,6 +53,13 @@ target_link_libraries(cmd_line_generate_sift_model
   ${PROJECT_NAME}
 )
 
+add_executable(cmd_line_generate_sift_model_separate
+  src/cmd_line_generate_sift_model_separate.cpp
+)
+target_link_libraries(cmd_line_generate_sift_model_separate
+  ${PROJECT_NAME}
+)
+
 add_executable(cmd_line_optical_flow
   src/cmd_line_optical_flow.cpp
 )

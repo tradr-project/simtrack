@@ -183,12 +183,15 @@ MultiRigidTracker::validatePoses(const pose::D_PointCloud &d_point_cloud,
 }
 
 void MultiRigidTracker::convertImage(cv::Mat image) {
-  if (image.type() != CV_8UC1)
+  if (image.type() != CV_8UC1){
     throw std::runtime_error(std::string(
         "MultiRigidTracker::convertImage:: image must be CV_8UC1\n"));
-  if ((image.rows != image_height_) || (image.cols != image_width_))
+  }
+  if ((image.rows != image_height_) || (image.cols != image_width_)){
+      std::cout<<"Expecting "<<image_height_<<" x "<<image_width_<<" but instead received "<<image.rows<<" x "<<image.cols<<std::endl;
     throw std::runtime_error(std::string(
         "MultiRigidTracker::convertImage:: incorrect image size\n"));
+  }
 
   // convert image to float
   cv::Mat image_float;

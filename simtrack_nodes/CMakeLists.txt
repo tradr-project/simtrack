@@ -27,7 +27,10 @@ generate_dynamic_reconfigure_options(
 add_service_files(
   FILES
   SwitchCamera.srv
+  SwitchCameraByName.srv
   SwitchObjects.srv
+  StopTracking.srv
+  MaskImage.srv
 )
 
 generate_messages(
@@ -63,11 +66,14 @@ include_directories(
 add_library(${PROJECT_NAME}
   src/pr2_cam_switch_node.cpp
   src/multi_rigid_node.cpp
+  src/simtrack_tradr_node.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
 )
+
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(multi_rigid_node
   src/multi_rigid_node_main.cpp
@@ -82,5 +88,12 @@ add_executable(pr2_cam_switch_node
   src/pr2_cam_switch_node_main.cpp
 )
 target_link_libraries(pr2_cam_switch_node
+  ${PROJECT_NAME}
+)
+
+add_executable(simtrack_tradr_node
+  src/simtrack_tradr_node_main.cpp
+)
+target_link_libraries(simtrack_tradr_node
   ${PROJECT_NAME}
 )
