@@ -289,7 +289,7 @@ bool SimtrackTRADRNode::start() {
   dynamic_reconfigure_server_.setCallback(f);
 
   // Simtrack is paused by default
-   setupCameraSubscribers("ids_wrist");
+   setupCameraSubscribers("camera_wrist");
    detector_enabled_.store(false);
 
   return true;
