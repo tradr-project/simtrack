@@ -10,6 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(OpenCV 2.4.8 REQUIRED)
 find_package(Eigen REQUIRED)
+find_package(HDF5 REQUIRED)
+find_package(CUDA REQUIRED)
 add_definitions(${EIGEN_DEFINITIONS})
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
@@ -35,6 +37,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${OpenCV2_INCLUDE_DIRS}
   ${EIGEN_INCLUDE_DIR}
+  ${HDF5_INCLUDE_DIRS}
+  ${CUDA_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}
@@ -44,6 +48,8 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS}
+  ${HDF5_LIBRARIES}
+  ${CUDA_LIBRARIES}
 )
 
 add_executable(cmd_line_generate_sift_model
