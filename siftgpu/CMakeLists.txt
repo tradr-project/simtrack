@@ -43,6 +43,7 @@ add_custom_target(additional_files_${PROJECT_NAME} SOURCES
 )
 
 include_directories(include
+  ${HDF5_INCLUDE_DIRS}
 )
 
 cuda_add_library(${PROJECT_NAME}
@@ -66,4 +67,5 @@ target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${CUDA_LIBRARIES}
   ${GLEW_LIBRARIES}
+  ${HDF5_LIBRARIES}
 )

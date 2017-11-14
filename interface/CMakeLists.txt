@@ -10,17 +10,26 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(OpenCV 2.4.8 REQUIRED)
 find_package(Eigen REQUIRED)
-find_package(HDF5 REQUIRED)
+find_package(HDF5 REQUIRED COMPONENTS CXX)
 find_package(CUDA REQUIRED)
 add_definitions(${EIGEN_DEFINITIONS})
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -lhdf5")
+
+set(LIBDEP
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+  ${HDF5_LIBRARIES}
+  ${CUDA_LIBRARIES}
+)
+message(${HDF5_LIBRARIES})
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
+  LIBRARIES ${PROJECT_NAME} ${LIBDEP}
   CATKIN_DEPENDS low_level_vision pose_estimation
-  DEPENDS cv_bridge
+  DEPENDS cv_bridge HDF5
 )
 
 # show additional files in qtcreator
@@ -45,11 +54,9 @@ add_library(${PROJECT_NAME}
   src/multi_rigid_tracker.cpp
   src/multi_rigid_detector.cpp
 )
+
 target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBS}
-  ${HDF5_LIBRARIES}
-  ${CUDA_LIBRARIES}
+  ${LIBDEP} -lhdf5
 )
 
 add_executable(cmd_line_generate_sift_model
@@ -57,6 +64,7 @@ add_executable(cmd_line_generate_sift_model
 )
 target_link_libraries(cmd_line_generate_sift_model
   ${PROJECT_NAME}
+#  ${LIBDEP}
 )
 
 add_executable(cmd_line_generate_sift_model_separate
@@ -64,6 +72,7 @@ add_executable(cmd_line_generate_sift_model_separate
 )
 target_link_libraries(cmd_line_generate_sift_model_separate
   ${PROJECT_NAME}
+#  ${LIBDEP}
 )
 
 add_executable(cmd_line_optical_flow
@@ -71,6 +80,7 @@ add_executable(cmd_line_optical_flow
 )
 target_link_libraries(cmd_line_optical_flow
   ${PROJECT_NAME}
+#  ${LIBDEP}
 )
 
 add_executable(cmd_line_render
@@ -78,6 +88,7 @@ add_executable(cmd_line_render
 )
 target_link_libraries(cmd_line_render
   ${PROJECT_NAME}
+#  ${LIBDEP}
 )
 
 add_executable(cmd_line_render_scene
@@ -85,6 +96,7 @@ add_executable(cmd_line_render_scene
 )
 target_link_libraries(cmd_line_render_scene
   ${PROJECT_NAME}
+#  ${LIBDEP}
 )
 
 add_executable(cmd_line_get_robot_frame
@@ -92,6 +104,7 @@ add_executable(cmd_line_get_robot_frame
 )
 target_link_libraries(cmd_line_get_robot_frame
   ${PROJECT_NAME}
+#  ${LIBDEP}
 )
 
 add_executable(cmd_line_extract_sift
@@ -99,6 +112,7 @@ add_executable(cmd_line_extract_sift
 )
 target_link_libraries(cmd_line_extract_sift
   ${PROJECT_NAME}
+#  ${LIBDEP}
 )
 
 add_executable(cmd_line_detect_object_pose
@@ -106,6 +120,7 @@ add_executable(cmd_line_detect_object_pose
 )
 target_link_libraries(cmd_line_detect_object_pose
   ${PROJECT_NAME}
+#  ${LIBDEP}
 )
 
 add_executable(cmd_line_track_multi_object
@@ -113,4 +128,5 @@ add_executable(cmd_line_track_multi_object
 )
 target_link_libraries(cmd_line_track_multi_object
   ${PROJECT_NAME}
+#  ${LIBDEP}
 )
