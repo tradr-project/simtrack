@@ -120,22 +120,22 @@ MultiRigidNode::MultiRigidNode(ros::NodeHandle nh)
       recording_start_time_(ros::Time::now()), auto_disable_detector_(false),
       color_only_mode_(false), switched_tracker_objects_(false) {
   // get model names from parameter server
-  if (!ros::param::get("/simtrack/model_path", model_path_))
+  if (!ros::param::get("simtrack/model_path", model_path_))
     throw std::runtime_error(
         std::string("MultiRigidNode::MultiRigidNode: could not "
-                    "find /simtrack/model_path on parameter server\n"));
+                    "find simtrack/model_path on parameter server\n"));
 
   std::vector<std::string> model_names;
-  if (!ros::param::get("/simtrack/model_names", model_names))
+  if (!ros::param::get("simtrack/model_names", model_names))
     throw std::runtime_error(
         std::string("MultiRigidNode::MultiRigidNode: could not "
-                    "find /simtrack/model_names on parameter server\n"));
+                    "find simtrack/model_names on parameter server\n"));
 
   for (auto &it : model_names) {
     objects_.push_back(composeObjectInfo(it));
     obj_filenames_.push_back(composeObjectFilename(it));
     pose_publishers_[it] =
-        nh.advertise<geometry_msgs::PoseStamped>("/simtrack/" + it, 1);
+        nh.advertise<geometry_msgs::PoseStamped>("simtrack/" + it, 1);
   }
 
   // get optical flow parameters
@@ -215,7 +215,7 @@ bool MultiRigidNode::start() {
   }
 
   switch_objects_srv_ = nh_.advertiseService(
-      "/simtrack/switch_objects", &MultiRigidNode::switchObjects, this);
+      "simtrack/switch_objects", &MultiRigidNode::switchObjects, this);
 
   bool compressed_streams = false;
   ros::param::get("simtrack/use_compressed_streams", compressed_streams);
@@ -248,7 +248,7 @@ bool MultiRigidNode::start() {
   }
 
   debug_img_it_.reset(new image_transport::ImageTransport(nh_));
-  debug_img_pub_ = debug_img_it_->advertise("/simtrack/image", 1);
+  debug_img_pub_ = debug_img_it_->advertise("simtrack/image", 1);
 
   dynamic_reconfigure::Server<simtrack_nodes::VisualizationConfig>::CallbackType
   f;

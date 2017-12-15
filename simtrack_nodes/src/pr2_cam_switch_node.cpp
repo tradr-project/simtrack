@@ -134,12 +134,12 @@ PR2CamSwitchNode::PR2CamSwitchNode(ros::NodeHandle nh)
       color_only_mode_(false), switched_tracker_camera_(false),
       switched_tracker_objects_(false) {
   // get model names from parameter server
-  if (!ros::param::get("/simtrack/model_path", model_path_))
-    parameterError(__func__, "/simtrack/model_path");
+  if (!ros::param::get("simtrack/model_path", model_path_))
+    parameterError(__func__, "simtrack/model_path");
 
   std::vector<std::string> model_names;
 
-  if (ros::param::get("/simtrack/model_names", model_names)) {
+  if (ros::param::get("simtrack/model_names", model_names)) {
     for (auto &it : model_names) {
       objects_.push_back(composeObjectInfo(it));
       obj_filenames_.push_back(composeObjectFilename(it));
@@ -196,7 +196,7 @@ PR2CamSwitchNode::PR2CamSwitchNode(ros::NodeHandle nh)
   /*****************************/
 
   int device_id_tracker = 0;
-  ros::param::get("/simtrack/tracker/device_id", device_id_tracker);
+  ros::param::get("simtrack/tracker/device_id", device_id_tracker);
 
   // Create dummy GL context before cudaGL init
   render::WindowLessGLContext dummy(10, 10);
@@ -224,16 +224,16 @@ bool PR2CamSwitchNode::start() {
   }
 
   switch_camera_srv_ = nh_.advertiseService(
-      "/simtrack/switch_camera", &PR2CamSwitchNode::switchCamera, this);
+      "simtrack/switch_camera", &PR2CamSwitchNode::switchCamera, this);
 
   switch_objects_srv_ = nh_.advertiseService(
-      "/simtrack/switch_objects", &PR2CamSwitchNode::switchObjects, this);
+      "simtrack/switch_objects", &PR2CamSwitchNode::switchObjects, this);
 
   sub_joint_state_ =
       nh_.subscribe("joint_states", 1, &PR2CamSwitchNode::jointStateCb, this);
 
   debug_img_it_.reset(new image_transport::ImageTransport(nh_));
-  debug_img_pub_ = debug_img_it_->advertise("/simtrack/image", 1);
+  debug_img_pub_ = debug_img_it_->advertise("simtrack/image", 1);
 
   dynamic_reconfigure::Server<simtrack_nodes::VisualizationConfig>::CallbackType
   f;
@@ -672,12 +672,12 @@ void PR2CamSwitchNode::setupCameraSubscribers(int camera_index) {
 
   // fetch rgb topic names from parameter server
   std::stringstream topic_name;
-  topic_name << "/camera/" << camera_index << "/rgb";
+  topic_name << "camera/" << camera_index << "/rgb";
   std::string rgb_topic;
   if (!ros::param::get(topic_name.str(), rgb_topic))
     parameterError(__func__, topic_name.str());
   topic_name.str("");
-  topic_name << "/camera/" << camera_index << "/rgb_info";
+  topic_name << "camera/" << camera_index << "/rgb_info";
   std::string rgb_info_topic;
   if (!ros::param::get(topic_name.str(), rgb_info_topic))
     parameterError(__func__, topic_name.str());
@@ -687,12 +687,12 @@ void PR2CamSwitchNode::setupCameraSubscribers(int camera_index) {
   sub_rgb_info_.subscribe(nh_, rgb_info_topic, 1);
 
   topic_name.str("");
-  topic_name << "/camera/" << camera_index << "/robot_frame";
+  topic_name << "camera/" << camera_index << "/robot_frame";
   if (!ros::param::get(topic_name.str(), robot_camera_frame_id_))
     parameterError(__func__, topic_name.str());
 
   topic_name.str("");
-  topic_name << "/camera/" << camera_index << "/color_only_mode";
+  topic_name << "camera/" << camera_index << "/color_only_mode";
   if (!ros::param::get(topic_name.str(), color_only_mode_))
     parameterError(__func__, topic_name.str());
 
@@ -703,7 +703,7 @@ void PR2CamSwitchNode::setupCameraSubscribers(int camera_index) {
         boost::bind(&PR2CamSwitchNode::colorOnlyCb, this, _1, _2));
   } else {
     topic_name.str("");
-    topic_name << "/camera/" << camera_index << "/depth";
+    topic_name << "camera/" << camera_index << "/depth";
     std::string depth_topic;
     if (!ros::param::get(topic_name.str(), depth_topic))
       parameterError(__func__, topic_name.str());

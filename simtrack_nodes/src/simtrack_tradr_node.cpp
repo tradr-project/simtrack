@@ -139,16 +139,16 @@ SimtrackTRADRNode::SimtrackTRADRNode(ros::NodeHandle nh)
 //  mask_image_ = cv::Mat::zeros(480, 640, CV_8UC1); // empty mask
 
   // get model names from parameter server
-  if (!ros::param::get("/simtrack/model_path", model_path_))
+  if (!ros::param::get("simtrack/model_path", model_path_))
     throw std::runtime_error(
         std::string("SimtrackTRADRNode::SimtrackTRADRNode: could not "
-                    "find /simtrack/model_path on parameter server\n"));
+                    "find simtrack/model_path on parameter server\n"));
 
   std::vector<std::string> model_names;
-  if (!ros::param::get("/simtrack/model_names", model_names))
+  if (!ros::param::get("simtrack/model_names", model_names))
     throw std::runtime_error(
         std::string("SimtrackTRADRNode::SimtrackTRADRNode: could not "
-                    "find /simtrack/model_names on parameter server\n"));
+                    "find simtrack/model_names on parameter server\n"));
 
   for (auto &it : model_names) {
     static bool first = true;
@@ -158,7 +158,7 @@ SimtrackTRADRNode::SimtrackTRADRNode(ros::NodeHandle nh)
         first=false;
     }
     pose_publishers_[it] =
-        nh.advertise<geometry_msgs::PoseStamped>("/simtrack/" + it, 1);
+        nh.advertise<geometry_msgs::PoseStamped>("simtrack/" + it, 1);
   }
 
   // get optical flow parameters
@@ -238,16 +238,16 @@ bool SimtrackTRADRNode::start() {
   }
 
   switch_camera_srv_ = nh_.advertiseService(
-      "/simtrack/switch_camera", &SimtrackTRADRNode::switchCameraByName, this);
+      "simtrack/switch_camera", &SimtrackTRADRNode::switchCameraByName, this);
 
   switch_objects_srv_ = nh_.advertiseService(
-      "/simtrack/switch_objects", &SimtrackTRADRNode::switchObjects, this);
+      "simtrack/switch_objects", &SimtrackTRADRNode::switchObjects, this);
 
   stop_tracking_srv_ = nh_.advertiseService(
-      "/simtrack/stop_tracking", &SimtrackTRADRNode::stopTracking, this);
+      "simtrack/stop_tracking", &SimtrackTRADRNode::stopTracking, this);
 
   mask_image_srv_ = nh_.advertiseService(
-      "/simtrack/mask_image", &SimtrackTRADRNode::maskImage, this);
+      "simtrack/mask_image", &SimtrackTRADRNode::maskImage, this);
 
 
   bool compressed_streams = false;
@@ -281,7 +281,7 @@ bool SimtrackTRADRNode::start() {
 //  }
 
   debug_img_it_.reset(new image_transport::ImageTransport(nh_));
-  debug_img_pub_ = debug_img_it_->advertise("/simtrack/image", 1);
+  debug_img_pub_ = debug_img_it_->advertise("simtrack/image", 1);
 
   dynamic_reconfigure::Server<simtrack_nodes::VisualizationConfig>::CallbackType
   f;
@@ -344,10 +344,10 @@ bool SimtrackTRADRNode::switchObjects(simtrack_nodes::SwitchObjectsRequest &req,
                                    simtrack_nodes::SwitchObjectsResponse &res) {
     // error checking -> lookup each object name in original object set
     std::vector<std::string> original_model_names;
-    if (!ros::param::get("/simtrack/model_names", original_model_names))
+    if (!ros::param::get("simtrack/model_names", original_model_names))
       throw std::runtime_error(
           std::string("SimtrackTRADRNode::switchObjects: could not "
-                      "find /simtrack/model_names on parameter server\n"));
+                      "find simtrack/model_names on parameter server\n"));
 
     for (auto requested_object : req.model_names) {
         bool found = false;
@@ -778,14 +778,14 @@ void SimtrackTRADRNode::setupCameraSubscribers(std::string camera_name) {
 
   // fetch rgb topic names from parameter server
   std::stringstream topic_name;
-  topic_name << "/camera/" << camera_name << "/rgb";
+  topic_name << "camera/" << camera_name << "/rgb";
   std::string rgb_topic;
   if (!ros::param::get(topic_name.str(), rgb_topic)){
     unsubscribeFromTopics();
     parameterError(__func__, topic_name.str());
   }
   topic_name.str("");
-  topic_name << "/camera/" << camera_name << "/rgb_info";
+  topic_name << "camera/" << camera_name << "/rgb_info";
   std::string rgb_info_topic;
   if (!ros::param::get(topic_name.str(), rgb_info_topic)){
     unsubscribeFromTopics();
@@ -798,12 +798,12 @@ void SimtrackTRADRNode::setupCameraSubscribers(std::string camera_name) {
 
    // NOTE: the camera frame is not used here
 //  topic_name.str("");
-//  topic_name << "/camera/" << camera_index << "/robot_frame";
+//  topic_name << "camera/" << camera_index << "/robot_frame";
 //  if (!ros::param::get(topic_name.str(), robot_camera_frame_id_))
 //    parameterError(__func__, topic_name.str());
 
   topic_name.str("");
-  topic_name << "/camera/" << camera_name << "/color_only_mode";
+  topic_name << "camera/" << camera_name << "/color_only_mode";
   if (!ros::param::get(topic_name.str(), color_only_mode_)){
     unsubscribeFromTopics();
     parameterError(__func__, topic_name.str());
@@ -816,7 +816,7 @@ void SimtrackTRADRNode::setupCameraSubscribers(std::string camera_name) {
         boost::bind(&SimtrackTRADRNode::colorOnlyCb, this, _1, _2));
   } else {
     topic_name.str("");
-    topic_name << "/camera/" << camera_name << "/depth";
+    topic_name << "camera/" << camera_name << "/depth";
     std::string depth_topic;
     if (!ros::param::get(topic_name.str(), depth_topic)){
       unsubscribeFromTopics();
